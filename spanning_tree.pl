@@ -75,7 +75,7 @@ is_empty(List):- not(member(_,List)).
 
 /* Generate subset of input list */
 list_subset([], []).
-list_subset([X|T1], [X|T2]):- list_subset(T1, T2). /* no redo jump to enxt line skipping single element, afterward recurse deeper */
+list_subset([X|T1], [X|T2]):- list_subset(T1, T2). /* on redo jump to next line skipping single element, afterward recurse deeper */
 list_subset([_|T1], T2):- list_subset(T1, T2).
 
 /* Read line from stdin */
