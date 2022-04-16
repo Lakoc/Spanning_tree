@@ -21,6 +21,4 @@ clean:
 
 .PHONY: run
 run: $(TARGET)
-	./$(TARGET) < tests/input1.txt > tests/output1.txt
-	# ./$(TARGET) < tests/input2.txt > tests/output2.txt	
-	# ./$(TARGET) < tests/input3.txt > tests/output3.txt		
+	python3 tests/run_tests.py $(TARGET) tests
