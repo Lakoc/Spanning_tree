@@ -15,7 +15,7 @@ is_spanning_tree(Tree):-
 	node(Node), !, /* select random node from that tree is explored */
 	(has_cycle(Node, -1, []) -> 
 		(retractall(edge_curr(X,Y)), false);  /* cycle was found, clear db, and return with false */
-		(visit_all(Node, [], []) -> 
+		(visit_all([],Node, [Node]) ->  /* check whatever all graph nodes are accesible */
 			retractall(edge_curr(X,Y)); /* spanning tree was found */
 			(retractall(edge_curr(X,Y)), false))). /* not every node is accesible, return false */
 
@@ -30,18 +30,18 @@ has_cycle(Curr, Prev, Visited):-
 	Next \= Prev, /* disable prev node */
 	has_cycle(Next, Curr, [Curr|Visited]). /* recursively call self with enlarged visited list */
 
-/* Recursively explore graph, by gradually enlarge Reachable list */
-visit_all(Node, Visited, Reachable):-
+/* Recursively explore graph */
+visit_all(Prev_list, Node, Visited):-
 	get_neighbors(Node,Neighbors), 
-	subtract(Neighbors, Visited, Can_visit), 
-	member(Next, Can_visit), /* get next node to visit */
-	union(Reachable, Neighbors, Reachable_New), 
-	visit_all(Next, [Node|Visited], [Node|Reachable_New]). /* add also current node */
+	subtract(Neighbors, Visited, Can_visit),
+	member(Next, Can_visit) ->  /* get next node to visit, if none found backoff to previous node */
+		visit_all([Node|Prev_list],Next, [Node|Visited]);
+		head_tail(Prev_list, Prev, Prevs), visit_all(Prevs,Prev, [Node|Visited]). /* backoff with extended visited list */
 
-/* Check whatever all nodes were explored, is called after any new neighbor is found */
-visit_all(_, _,Reachable):- 
+/* Check whatever all nodes were explored, is called after all nodes were examined */
+visit_all(_,_, Visited):- 
 	get_nodes(Nodes), 
-	subtract(Nodes, Reachable, Diff), 
+	subtract(Nodes, Visited, Diff), 
 	is_empty(Diff).
 
 /* Get all node neighors */
@@ -72,6 +72,9 @@ load_edges([L|Ls]) :- load_edges(Ls), load_edge(L).
 
 /* Check whatever list is empty */
 is_empty(List):- not(member(_,List)).
+
+/* Get list head and tail */
+head_tail([H|T], H, T).
 
 /* Generate subset of input list */
 list_subset([], []).

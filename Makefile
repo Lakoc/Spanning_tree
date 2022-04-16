@@ -21,4 +21,8 @@ clean:
 
 .PHONY: run
 run: $(TARGET)
+	./$(TARGET) < tests/ref.in
+
+.PHONY: test
+test: $(TARGET)
 	python3 tests/run_tests.py $(TARGET) tests
