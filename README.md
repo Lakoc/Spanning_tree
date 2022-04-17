@@ -29,8 +29,13 @@ make test
 
 
 ## Measured tests
-| File | Runtime [ms] |
-|------|--------------|
-| A    | 0.5          |
-|      |              |
-|      |              |
+| File                     | Runtime [ms] |
+|--------------------------|--------------|
+| edge                     | 18           |
+| triangle                 | 25           |
+| square                   | 21           |
+| ref                      | 36           |
+| connected_square         | 32           |
+| connected_square_cross   | 37           |
+| connected_square_cross+1 | 45           |
+
