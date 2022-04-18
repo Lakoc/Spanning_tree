@@ -13,22 +13,24 @@ main :-
 is_spanning_tree(Tree):- 
 	foreach(member([X, Y], Tree),assertz(edge_curr(X,Y))), /* insert current node to dynamic "database"*/
 	node(Node), !, /* select random node from that tree is explored */
-	(has_cycle(Node, -1, []) -> 
-		(retractall(edge_curr(X,Y)), false);  /* cycle was found, clear db, and return with false */
+%	(has_cycle(Node, -1, []) ->  
+%		(retractall(edge_curr(X,Y)), false);  Spanning tree has always N-1 edges, thus there is no need to detect cycle.
+%											  Check only if all nodes are accessible.
 		(visit_all([],Node, [Node]) ->  /* check whatever all graph nodes are accesible */
 			retractall(edge_curr(X,Y)); /* spanning tree was found */
-			(retractall(edge_curr(X,Y)), false))). /* not every node is accesible, return false */
+			(retractall(edge_curr(X,Y)), false)). /* not every node is accesible, return false */
 
-/* Check whatever graph has cycle */
-has_cycle(Curr, Prev, Visited):-
-	subtract(Visited, [Prev], Vis), /* do not enable back-loop to prev node */
-	member(Curr, Vis) , !. /* node that was explored before was found -> graph has cycle */
 
-/* No cycle found at the time, explore further */
-has_cycle(Curr, Prev, Visited):-
-	(edge_curr(Curr, Next); edge_curr(Next, Curr)), /* get next node */
-	Next \= Prev, /* disable prev node */
-	has_cycle(Next, Curr, [Curr|Visited]). /* recursively call self with enlarged visited list */
+% /* Check whatever graph has cycle */
+% has_cycle(Curr, Prev, Visited):-
+% 	subtract(Visited, [Prev], Vis), /* do not enable back-loop to prev node */
+% 	member(Curr, Vis) , !. /* node that was explored before was found -> graph has cycle */
+
+% /* No cycle found at the time, explore further */
+% has_cycle(Curr, Prev, Visited):-
+% 	(edge_curr(Curr, Next); edge_curr(Next, Curr)), /* get next node */
+% 	Next \= Prev, /* disable prev node */
+% 	has_cycle(Next, Curr, [Curr|Visited]). /* recursively call self with enlarged visited list */
 
 /* Recursively explore graph */
 visit_all(Prev_list, Node, Visited):-
@@ -51,7 +53,14 @@ get_neighbors(Node, Neighbors):-
 	union(Left, Right, Neighbors).
 
 /* Get single tree */
-get_tree(Tree):- findall([X,Y], edge(X,Y), Ls), list_subset(Ls, Tree).
+get_tree(Tree):- 
+	get_nodes(Nodes), 
+	length(Nodes, N_nodes), 
+	findall([X,Y], edge(X,Y), Ls),
+	list_subset(Ls, Tree),
+	length(Tree, Tree_size),
+	Spanning_size is  N_nodes -1,
+	Tree_size = Spanning_size.
 
 /* Get all nodes */
 get_nodes(Nodes):- setof(X, node(X), Nodes).
