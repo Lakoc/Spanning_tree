@@ -59,7 +59,7 @@ get_tree(Tree):-
 	findall([X,Y], edge(X,Y), Ls),
 	list_subset(Ls, Tree),
 	length(Tree, Tree_size),
-	Spanning_size is  N_nodes -1,
+	Spanning_size is  N_nodes -1, % filter out trees with size != N[number of nodes]-1
 	Tree_size = Spanning_size.
 
 /* Get all nodes */
